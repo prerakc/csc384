@@ -69,5 +69,54 @@ def prop_BT(csp, newVar=None):
 def prop_FC(csp, newVar=None):
     #IMPLEMENT
 
+    pruned = []
+
+    if newVar is None:
+        cons = csp.get_all_cons()
+    else:
+        cons = csp.get_cons_with_var(newVar)
+
+    for c in cons:
+        if c.get_n_unasgn() == 1:
+            v = None
+            i = None
+            vals = []
+            for idx, var in enumerate(c.get_scope()):
+                val = var.get_assigned_value()
+                vals.append(val)
+                if val is None:
+                    v = var
+                    i = idx
+            for val in v.cur_domain():
+                vals[i] = val
+                if not c.check(vals):
+                    v.prune_value(val)
+                    pruned.append((v, val))
+            if v.cur_domain_size() == 0:
+                return False, pruned
+
+    return True, pruned
+
 def prop_GAC(csp, newVar=None):
     #IMPLEMENT
+
+    pruned = []
+
+    if newVar is None:
+        cons = dict.fromkeys(csp.get_all_cons())
+    else:
+        cons = dict.fromkeys(csp.get_cons_with_var(newVar))
+
+    while cons:
+        c = next(iter(cons))
+        del cons[c]
+        for v in c.get_scope():
+            for val in v.cur_domain():
+                if not c.has_support(v, val):
+                    v.prune_value(val)
+                    pruned.append((v, val))
+                    cons.update({i: None for i in csp.get_cons_with_var(v) if i != c})
+            if v.cur_domain_size() == 0:
+                return False, pruned
+
+    return True, pruned
