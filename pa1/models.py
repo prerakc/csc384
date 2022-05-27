@@ -105,7 +105,7 @@ def warehouse_full_model(warehouse_grid):
     
     size = warehouse_grid[0][0]
 
-    csp, vars = warehouse_binary_ne_grid(warehouse_grid)
+    csp, vars = warehouse_nary_ad_grid(warehouse_grid)
 
     n = len(vars)
 
