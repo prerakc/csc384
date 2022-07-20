@@ -34,13 +34,13 @@ def compute_heuristic(board, color): #not implemented, optional
     for i in range(n):
         for j in range(n):
             # corners
-            if (i == 0 or i == n - 1) and (j == 0 or j == n - 1):
+            if (i == 0 or i == n-1) and (j == 0 or j == n-1):
                 if board[i][j] == color:
                     score += corners_bonus
                 else:
                     score -= corners_bonus
             # sides
-            elif (i == 0 or i == n - 1) or (j == 0 or j == n - 1):
+            elif (i == 0 or i == n-1) or (j == 0 or j == n-1):
                 if board[i][j] == color:
                     score += sides_bonus
                 else:
@@ -58,7 +58,7 @@ def cached_utility(board, state_color, utility_color, caching):
     if caching and (board, state_color) in cached_states:
         return cached_states[(board, state_color)][1]
     else:
-        return compute_utility(board, utility_color)
+        return compute_heuristic(board, utility_color)
 
 ############ MINIMAX ###############################
 def mm_min_node(board, color, limit, caching = 0):
@@ -71,7 +71,7 @@ def mm_min_node(board, color, limit, caching = 0):
     best_move = None
     moves = get_possible_moves(board, opponent)
     if not limit or not moves:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
     for move in moves:
         (col, row) = move
         new_board = play_move(board, opponent, col, row)
@@ -93,7 +93,7 @@ def mm_max_node(board, color, limit, caching = 0):
     best_move = None
     moves = get_possible_moves(board, color)
     if not limit or not moves:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
     for move in moves:
         (col, row) = move
         new_board = play_move(board, color, col, row)
@@ -135,7 +135,7 @@ def ab_min_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
     best_move = None
     moves = get_possible_moves(board, opponent)
     if not limit or not moves:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
     if ordering:
         moves.sort(key=lambda m: cached_utility(play_move(board, opponent, m[0], m[1]), color, color, caching), reverse=False)
     for move in moves:
@@ -164,7 +164,7 @@ def ab_max_node(board, color, alpha, beta, limit, caching = 0, ordering = 0):
     best_move = None
     moves = get_possible_moves(board, color)
     if not limit or not moves:
-        return None, compute_utility(board, color)
+        return None, compute_heuristic(board, color)
     if ordering:
         moves.sort(key=lambda m: cached_utility(play_move(board, color, m[0], m[1]), opponent, color, caching), reverse=True)
     for move in moves:
@@ -211,7 +211,7 @@ def run_ai():
     Then it repeatedly receives the current score and current board state
     until the game is over.
     """
-    print("Bidding AI") # First line is the name of this AI
+    print("New Heuristic") # First line is the name of this AI
     arguments = input().split(",")
 
     color = int(arguments[0]) #Player color: 1 for dark (goes first), 2 for light.
